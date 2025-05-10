@@ -32,8 +32,8 @@ import java.sql.Statement;
 public class VTPProcessCSV {
 
    // MODIFY these to load/store to/from the correct locations
-   private static final String DATABASE = "jdbc:sqlite:database/vtp.db";
-   private static final String CSV_FILE = "database/lga_indigenous_status_by_age_by_sex_census_2016.csv";
+   private static final String DATABASE = "jdbc:sqlite:database/test.db";
+   private static final String CSV_FILE = "database/lga_highest_year_of_school_completed_by_indigenous_status_by_sex_2016.csv";
 
 
    public static void main (String[] args) {
@@ -42,20 +42,12 @@ public class VTPProcessCSV {
       // These are specific to the given file and should be changed for each file.
       // This is a *simple* way to help you get up and running quickly wihout being confusing
       String category[] = {
-         "_0_4",
-         "_5_9",
-         "_10_14",
-         "_15_19",
-         "_20_24",
-         "_25_29",
-         "_30_34",
-         "_35_39",
-         "_40_44",
-         "_45_49",
-         "_50_54",
-         "_55_59",
-         "_60_64",
-         "_65_yrs_ov"
+         "did_not_go_to_school",
+         "y8_below",
+         "y9_equivalent",
+         "y10_equivalent",
+         "y11_equivalent",
+         "y12_equivalent"
       };
       String status[] = {
          "indig",
@@ -66,38 +58,6 @@ public class VTPProcessCSV {
          "f",
          "m"
       };
-      int age_min[] = {
-         0,
-         5,
-         10,
-         15,
-         20,
-         25,
-         30,
-         35,
-         40,
-         45,
-         50,
-         55,
-         60,
-         65
-      };
-      int age_max[] = {
-         4,
-         9,
-         14,
-         19,
-         24,
-         29,
-         34,
-         39,
-         44,
-         49,
-         54,
-         59,
-         64,
-         200,
-      };
 
       // JDBC Database Object
       Connection connection = null;
@@ -106,10 +66,10 @@ public class VTPProcessCSV {
       try {
          // Open A CSV File to process, one line at a time
          // CHANGE THIS to process a different file
-         Scanner lineScanner = new Scanner(new File(CSV_FILE));
+         Scanner lineScanner = new Scanner(new File(CSV_FILE));      // scanner đọc từ tệp CSV_FILE 
 
          // Read the first line of "headings"
-         String header = lineScanner.nextLine();
+         String header = lineScanner.nextLine(); 
          System.out.println("Heading row" + header + "\n");
 
          // Connect to JDBC database
@@ -148,16 +108,14 @@ public class VTPProcessCSV {
                Statement statement = connection.createStatement();
 
                // Create Insert Statement
-               String query = "INSERT into Population VALUES ("
-                              + lgaCode + ","
-                              + year + ","
-                              + "'" + status[indexStatus] + "',"
-                              + "'" + sex[indexSex] + "',"
-                              + "'" + category[indexCategory] + "',"
-                              + count + ","
-                              + age_min[indexCategory] + ","
-                              + age_max[indexCategory]
-                              + ")";
+               String query = "INSERT INTO School_completion (lga_code, lga_year, indigenous_status, sex, category, count) VALUES ("
+                                    + lgaCode + ","
+                                    + year + ","
+                                    + "'" + status[indexStatus] + "',"
+                                    + "'" + sex[indexSex] + "',"
+                                    + "'" + category[indexCategory] + "',"
+                                    + count
+                                    + ")";
 
                // Execute the INSERT
                System.out.println("Executing: " + query);
